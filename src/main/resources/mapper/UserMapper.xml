@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.car4s.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.car4s.model.User">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="real_name" property="realName" />
+        <result column="phone" property="phone" />
+        <result column="email" property="email" />
+        <result column="role" property="role" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE id = #{id}
+    </select>
+
+    <select id="findByUsername" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE username = #{username}
+    </select>
+
+    <select id="login" resultMap="BaseResultMap">
+        SELECT * FROM user
+        WHERE username = #{username} AND password = #{password} AND status = 1
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT * FROM user ORDER BY create_time DESC
+    </select>
+
+    <select id="findByRole" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE role = #{role} ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.car4s.model.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user(username, password, real_name, phone, email, role, status, create_time)
+        VALUES(#{username}, #{password}, #{realName}, #{phone}, #{email}, #{role}, 1, NOW())
+    </insert>
+
+    <update id="update" parameterType="com.car4s.model.User">
+        UPDATE user
+        SET real_name = #{realName},
+            phone = #{phone},
+            email = #{email},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM user WHERE id = #{id}
+    </delete>
+</mapper>

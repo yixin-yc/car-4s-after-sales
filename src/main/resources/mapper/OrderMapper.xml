@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.car4s.mapper.OrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.car4s.model.ServiceOrder">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="owner_id" property="ownerId" />
+        <result column="vehicle_id" property="vehicleId" />
+        <result column="mechanic_id" property="mechanicId" />
+        <result column="appointment_time" property="appointmentTime" />
+        <result column="service_type" property="serviceType" />
+        <result column="service_content" property="serviceContent" />
+        <result column="amount" property="amount" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="complete_time" property="completeTime" />
+        <association property="owner" javaType="com.car4s.model.User">
+            <id column="oid" property="id" />
+            <result column="oreal_name" property="realName" />
+            <result column="ophone" property="phone" />
+        </association>
+        <association property="mechanic" javaType="com.car4s.model.User">
+            <id column="mid" property="id" />
+            <result column="mreal_name" property="realName" />
+        </association>
+        <association property="vehicle" javaType="com.car4s.model.Vehicle">
+            <id column="vid" property="id" />
+            <result column="plate_number" property="plateNumber" />
+            <result column="model" property="model" />
+        </association>
+    </resultMap>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT so.*,
+               o.id as oid, o.real_name as oreal_name, o.phone as ophone,
+               m.id as mid, m.real_name as mreal_name,
+               v.id as vid, v.plate_number, v.model
+        FROM service_order so
+                 LEFT JOIN user o ON so.owner_id = o.id
+                 LEFT JOIN user m ON so.mechanic_id = m.id
+                 LEFT JOIN vehicle v ON so.vehicle_id = v.id
+        WHERE so.id = #{id}
+    </select>
+
+    <select id="findByOrderNo" resultMap="BaseResultMap">
+        SELECT * FROM service_order WHERE order_no = #{orderNo}
+    </select>
+
+    <select id="findByOwnerId" resultMap="BaseResultMap">
+        SELECT so.*, v.plate_number, v.model
+        FROM service_order so
+                 LEFT JOIN vehicle v ON so.vehicle_id = v.id
+        WHERE so.owner_id = #{ownerId}
+        ORDER BY so.create_time DESC
+    </select>
+
+    <select id="findByMechanicId" resultMap="BaseResultMap">
+        SELECT so.*, v.plate_number, v.model,
+               o.real_name as oreal_name, o.phone as ophone
+        FROM service_order so
+                 LEFT JOIN vehicle v ON so.vehicle_id = v.id
+                 LEFT JOIN user o ON so.owner_id = o.id
+        WHERE so.mechanic_id = #{mechanicId}
+        ORDER BY so.create_time DESC
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT so.*,
+               o.real_name as oreal_name, o.phone as ophone,
+               m.real_name as mreal_name,
+               v.plate_number, v.model
+        FROM service_order so
+                 LEFT JOIN user o ON so.owner_id = o.id
+                 LEFT JOIN user m ON so.mechanic_id = m.id
+                 LEFT JOIN vehicle v ON so.vehicle_id = v.id
+        ORDER BY so.create_time DESC
+    </select>
+
+    <select id="findByStatus" resultMap="BaseResultMap">
+        SELECT so.*,
+               o.real_name as oreal_name,
+               v.plate_number
+        FROM service_order so
+                 LEFT JOIN user o ON so.owner_id = o.id
+                 LEFT JOIN vehicle v ON so.vehicle_id = v.id
+        WHERE so.status = #{status}
+        ORDER BY so.create_time DESC
+    </select>
+
+    <select id="getOrderCountByOwner" resultType="int">
+        SELECT COUNT(*) FROM service_order WHERE owner_id = #{ownerId}
+    </select>
+
+    <select id="getRecentOrdersByOwner" resultMap="BaseResultMap">
+        SELECT so.*, v.plate_number, v.model
+        FROM service_order so
+                 LEFT JOIN vehicle v ON so.vehicle_id = v.id
+        WHERE so.owner_id = #{ownerId}
+        ORDER BY so.create_time DESC
+            LIMIT #{limit}
+    </select>
+
+    <insert id="insert" parameterType="com.car4s.model.ServiceOrder" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO service_order(order_no, owner_id, vehicle_id, mechanic_id, appointment_time,
+                                  service_type, service_content, amount, status, create_time)
+        VALUES(#{orderNo}, #{ownerId}, #{vehicleId}, #{mechanicId}, #{appointmentTime},
+               #{serviceType}, #{serviceContent}, #{amount}, #{status}, NOW())
+    </insert>
+
+    <update id="update" parameterType="com.car4s.model.ServiceOrder">
+        UPDATE service_order
+        SET mechanic_id = #{mechanicId},
+            appointment_time = #{appointmentTime},
+            service_content = #{serviceContent},
+            amount = #{amount},
+            status = #{status},
+            complete_time = #{completeTime}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM service_order WHERE id = #{id}
+    </delete>
+</mapper>

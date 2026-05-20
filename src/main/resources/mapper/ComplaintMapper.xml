@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.car4s.mapper.ComplaintMapper">
+
+    <resultMap id="BaseResultMap" type="com.car4s.model.Complaint">
+        <id column="id" property="id" />
+        <result column="owner_id" property="ownerId" />
+        <result column="order_id" property="orderId" />
+        <result column="content" property="content" />
+        <result column="reply" property="reply" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="handle_time" property="handleTime" />
+        <association property="owner" javaType="com.car4s.model.User">
+            <id column="uid" property="id" />
+            <result column="real_name" property="realName" />
+            <result column="phone" property="phone" />
+        </association>
+        <association property="order" javaType="com.car4s.model.ServiceOrder">
+            <id column="oid" property="id" />
+            <result column="order_no" property="orderNo" />
+        </association>
+    </resultMap>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT c.*, u.id as uid, u.real_name, u.phone,
+               o.id as oid, o.order_no
+        FROM complaint c
+                 LEFT JOIN user u ON c.owner_id = u.id
+                 LEFT JOIN service_order o ON c.order_id = o.id
+        WHERE c.id = #{id}
+    </select>
+
+    <select id="findByOwnerId" resultMap="BaseResultMap">
+        SELECT * FROM complaint
+        WHERE owner_id = #{ownerId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT c.*, u.id as uid, u.real_name, u.phone,
+               o.order_no
+        FROM complaint c
+                 LEFT JOIN user u ON c.owner_id = u.id
+                 LEFT JOIN service_order o ON c.order_id = o.id
+        ORDER BY c.create_time DESC
+    </select>
+
+    <select id="findUnhandled" resultMap="BaseResultMap">
+        SELECT c.*, u.id as uid, u.real_name, u.phone,
+               o.order_no
+        FROM complaint c
+                 LEFT JOIN user u ON c.owner_id = u.id
+                 LEFT JOIN service_order o ON c.order_id = o.id
+        WHERE c.status = 0
+        ORDER BY c.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.car4s.model.Complaint" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO complaint(owner_id, order_id, content, status, create_time)
+        VALUES(#{ownerId}, #{orderId}, #{content}, 0, NOW())
+    </insert>
+
+    <update id="update" parameterType="com.car4s.model.Complaint">
+        UPDATE complaint
+        SET content = #{content}
+        WHERE id = #{id}
+    </update>
+
+    <update id="handle">
+        UPDATE complaint
+        SET reply = #{reply},
+            status = 1,
+            handle_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM complaint WHERE id = #{id}
+    </delete>
+</mapper>

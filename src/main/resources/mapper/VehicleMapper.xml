@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.car4s.mapper.VehicleMapper">
+
+    <resultMap id="BaseResultMap" type="com.car4s.model.Vehicle">
+        <id column="id" property="id" />
+        <result column="vehicle_no" property="vehicleNo" />
+        <result column="owner_id" property="ownerId" />
+        <result column="plate_number" property="plateNumber" />
+        <result column="model" property="model" />
+        <result column="purchase_date" property="purchaseDate" />
+        <result column="vin" property="vin" />
+        <result column="maintenance_cycle" property="maintenanceCycle" />
+        <result column="last_maintenance" property="lastMaintenance" />
+        <result column="create_time" property="createTime" />
+        <association property="owner" javaType="com.car4s.model.User">
+            <id column="uid" property="id" />
+            <result column="ureal_name" property="realName" />
+            <result column="uphone" property="phone" />
+        </association>
+    </resultMap>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT v.*, u.id as uid, u.real_name as ureal_name, u.phone as uphone
+        FROM vehicle v
+                 LEFT JOIN user u ON v.owner_id = u.id
+        WHERE v.id = #{id}
+    </select>
+
+    <select id="findByOwnerId" resultMap="BaseResultMap">
+        SELECT * FROM vehicle WHERE owner_id = #{ownerId} ORDER BY create_time DESC
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT v.*, u.id as uid, u.real_name as ureal_name, u.phone as uphone
+        FROM vehicle v
+                 LEFT JOIN user u ON v.owner_id = u.id
+        ORDER BY v.create_time DESC
+    </select>
+
+    <select id="findByPlateNumber" resultMap="BaseResultMap">
+        SELECT * FROM vehicle WHERE plate_number = #{plateNumber}
+    </select>
+
+    <insert id="insert" parameterType="com.car4s.model.Vehicle" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO vehicle(vehicle_no, owner_id, plate_number, model, purchase_date, vin,
+                            maintenance_cycle, last_maintenance, create_time)
+        VALUES(#{vehicleNo}, #{ownerId}, #{plateNumber}, #{model}, #{purchaseDate}, #{vin},
+               #{maintenanceCycle}, #{lastMaintenance}, NOW())
+    </insert>
+
+    <update id="update" parameterType="com.car4s.model.Vehicle">
+        UPDATE vehicle
+        SET plate_number = #{plateNumber},
+            model = #{model},
+            purchase_date = #{purchaseDate},
+            vin = #{vin},
+            maintenance_cycle = #{maintenanceCycle},
+            last_maintenance = #{lastMaintenance}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM vehicle WHERE id = #{id}
+    </delete>
+</mapper>
