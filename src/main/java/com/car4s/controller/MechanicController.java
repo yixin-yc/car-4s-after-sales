@@ -1,5 +1,6 @@
 package com.car4s.controller;
 
+import com.car4s.mapper.OrderMapper;
 import com.car4s.model.*;
 import com.car4s.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/mechanic")
@@ -26,6 +26,9 @@ public class MechanicController {
 
     @Autowired
     private PartService partService;
+
+    @Autowired
+    private OrderMapper orderMapper;
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
@@ -83,9 +86,19 @@ public class MechanicController {
 
             // 更新配件库存（如果有使用配件）
             if (partIds != null && partQuantities != null && partIds.length > 0) {
+                List<Integer> ids = new ArrayList<>();
+                for (Integer id : partIds) {
+                    if (id != null) ids.add(id);
+                }
+                Map<Integer, Part> partMap = new HashMap<>();
+                if (!ids.isEmpty()) {
+                    for (Part p : orderMapper.findPartsByIds(ids)) {
+                        partMap.put(p.getId(), p);
+                    }
+                }
                 for (int i = 0; i < partIds.length; i++) {
                     if (partIds[i] != null && partQuantities[i] != null) {
-                        Part part = partService.getPartById(partIds[i]);
+                        Part part = partMap.get(partIds[i]);
                         if (part != null) {
                             int newStock = part.getStock() - partQuantities[i];
                             partService.updateStock(partIds[i], newStock);

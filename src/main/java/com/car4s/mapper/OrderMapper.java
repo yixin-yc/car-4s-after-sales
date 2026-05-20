@@ -1,5 +1,6 @@
 package com.car4s.mapper;
 
+import com.car4s.model.Part;
 import com.car4s.model.ServiceOrder;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -18,4 +19,5 @@ public interface OrderMapper {
     void delete(@Param("id") Integer id);
     int getOrderCountByOwner(@Param("ownerId") Integer ownerId);
     List<ServiceOrder> getRecentOrdersByOwner(@Param("ownerId") Integer ownerId, @Param("limit") Integer limit);
+    List<Part> findPartsByIds(@Param("ids") List<Integer> ids);
 }
