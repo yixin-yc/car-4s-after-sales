@@ -3,6 +3,7 @@ package com.car4s.service;
 import com.car4s.model.Part;
 import com.car4s.mapper.PartMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class PartService {
         return partMapper.findAll();
     }
 
+    @Cacheable(value = "parts", key = "#id", unless = "#result == null")
     public Part getPartById(Integer id) {
         return partMapper.findById(id);
     }

@@ -3,6 +3,7 @@ package com.car4s.service;
 import com.car4s.model.Vehicle;
 import com.car4s.mapper.VehicleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class VehicleService {
         return vehicleMapper.findByOwnerId(ownerId);
     }
 
+    @Cacheable(value = "vehicles", key = "#id", unless = "#result == null")
     public Vehicle getVehicleById(Integer id) {
         return vehicleMapper.findById(id);
     }
