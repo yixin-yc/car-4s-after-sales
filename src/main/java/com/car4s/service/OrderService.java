@@ -40,6 +40,15 @@ public class OrderService {
         return orderMapper.findAll();
     }
 
+    public List<ServiceOrder> getOrdersWithPage(int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return orderMapper.findAllWithPage(offset, pageSize);
+    }
+
+    public int getTotalOrderCount() {
+        return orderMapper.countAll();
+    }
+
     public List<ServiceOrder> getOrdersByStatus(String status) {
         return orderMapper.findByStatus(status);
     }

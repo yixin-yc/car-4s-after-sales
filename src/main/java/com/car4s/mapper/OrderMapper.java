@@ -20,4 +20,6 @@ public interface OrderMapper {
     int getOrderCountByOwner(@Param("ownerId") Integer ownerId);
     List<ServiceOrder> getRecentOrdersByOwner(@Param("ownerId") Integer ownerId, @Param("limit") Integer limit);
     List<Part> findPartsByIds(@Param("ids") List<Integer> ids);
+    List<ServiceOrder> findAllWithPage(@Param("offset") int offset, @Param("pageSize") int pageSize);
+    int countAll();
 }

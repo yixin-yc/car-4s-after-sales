@@ -124,6 +124,23 @@
         DELETE FROM service_order WHERE id = #{id}
     </delete>
 
+    <select id="findAllWithPage" resultMap="BaseResultMap">
+        SELECT so.*,
+               o.real_name as oreal_name, o.phone as ophone,
+               m.real_name as mreal_name,
+               v.plate_number, v.model
+        FROM service_order so
+                 LEFT JOIN user o ON so.owner_id = o.id
+                 LEFT JOIN user m ON so.mechanic_id = m.id
+                 LEFT JOIN vehicle v ON so.vehicle_id = v.id
+        ORDER BY so.create_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM service_order
+    </select>
+
     <select id="findPartsByIds" resultType="com.car4s.model.Part">
         SELECT * FROM part WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">

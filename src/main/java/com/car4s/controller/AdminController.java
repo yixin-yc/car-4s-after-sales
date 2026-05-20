@@ -118,8 +118,15 @@ public class AdminController {
     }
 
     @GetMapping("/orders")
-    public String orders(Model model) {
-        model.addAttribute("orders", orderService.getAllOrders());
+    public String orders(@RequestParam(defaultValue = "1") int page,
+                         @RequestParam(defaultValue = "10") int pageSize,
+                         Model model) {
+        model.addAttribute("orders", orderService.getOrdersWithPage(page, pageSize));
+        int totalCount = orderService.getTotalOrderCount();
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("totalPages", (int) Math.ceil((double) totalCount / pageSize));
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", pageSize);
         return "admin/orders";
     }
 
