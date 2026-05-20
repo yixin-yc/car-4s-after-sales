@@ -4,22 +4,13 @@ spring:
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    type: com.alibaba.druid.pool.DruidDataSource
-    druid:
-      initial-size: ${DB_POOL_INITIAL:5}
-      min-idle: ${DB_POOL_MIN:5}
-      max-active: ${DB_POOL_MAX:20}
-      max-wait: 60000
-      time-between-eviction-runs-millis: 60000
-      min-evictable-idle-time-millis: 300000
-      validation-query: SELECT 1 FROM DUAL
-      test-while-idle: true
-      test-on-borrow: false
-      test-on-return: false
-      pool-prepared-statements: true
-      max-pool-prepared-statement-per-connection-size: 20
-      filters: stat,wall
-      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
 
   mvc:
     view:
@@ -52,6 +43,10 @@ pagehelper:
 
 server:
   port: ${SERVER_PORT:8080}
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
   servlet:
     context-path: /car4s
     session:

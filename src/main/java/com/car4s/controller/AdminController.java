@@ -31,6 +31,9 @@ public class AdminController {
     @Autowired
     private ComplaintService complaintService;
 
+    @Autowired
+    private AsyncStatisticsService asyncStatisticsService;
+
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         model.addAttribute("userCount", userService.getAllUsers().size());
@@ -137,6 +140,13 @@ public class AdminController {
         model.addAttribute("processingOrders", orderService.getOrdersByStatus("processing").size());
         model.addAttribute("completedOrders", orderService.getOrdersByStatus("completed").size());
         return "admin/order_statistics";
+    }
+
+    @GetMapping("/order/statistics/async")
+    @ResponseBody
+    public String orderStatisticsAsync() {
+        asyncStatisticsService.computeOrderStatistics();
+        return "任务已提交";
     }
 
     @GetMapping("/complaints")
