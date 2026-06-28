@@ -50,6 +50,16 @@
         WHERE id = #{id}
     </update>
 
+    <update id="updateProfile" parameterType="com.car4s.model.User">
+        UPDATE user
+        SET username = #{username},
+            password = #{password},
+            real_name = #{realName},
+            phone = #{phone},
+            email = #{email}
+        WHERE id = #{id}
+    </update>
+
     <delete id="delete">
         DELETE FROM user WHERE id = #{id}
     </delete>

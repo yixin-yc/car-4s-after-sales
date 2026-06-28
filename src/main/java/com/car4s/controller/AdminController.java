@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/admin")
@@ -242,5 +243,22 @@ public class AdminController {
     public String deleteMessage(@PathVariable Integer id) {
         messageService.deleteMessage(id);
         return "redirect:/admin/messages";
+    }
+
+    @GetMapping("/profile")
+    public String profile(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("user", userService.getUserById(user.getId()));
+        return "admin/profile";
+    }
+
+    @PostMapping("/profile/update")
+    public String updateProfile(User user, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        user.setId(currentUser.getId());
+        userService.updateProfile(user);
+        User updatedUser = userService.getUserById(currentUser.getId());
+        session.setAttribute("user", updatedUser);
+        return "redirect:/admin/profile";
     }
 }

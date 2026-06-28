@@ -30,6 +30,9 @@ public class MechanicController {
     @Autowired
     private OrderMapper orderMapper;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
@@ -174,5 +177,22 @@ public class MechanicController {
         model.addAttribute("normalCount", normalCount);
 
         return "mechanic/maintenance_reminder";
+    }
+
+    @GetMapping("/profile")
+    public String profile(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("user", userService.getUserById(user.getId()));
+        return "mechanic/profile";
+    }
+
+    @PostMapping("/profile/update")
+    public String updateProfile(User user, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        user.setId(currentUser.getId());
+        userService.updateProfile(user);
+        User updatedUser = userService.getUserById(currentUser.getId());
+        session.setAttribute("user", updatedUser);
+        return "redirect:/mechanic/profile";
     }
 }

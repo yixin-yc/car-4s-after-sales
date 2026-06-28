@@ -26,6 +26,9 @@ public class OwnerController {
     @Autowired
     private ComplaintService complaintService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
@@ -152,5 +155,22 @@ public class OwnerController {
         evaluation.setOwnerId(user.getId());
         orderService.addEvaluation(evaluation);
         return "redirect:/owner/orders";
+    }
+
+    @GetMapping("/profile")
+    public String profile(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("user", userService.getUserById(user.getId()));
+        return "owner/profile";
+    }
+
+    @PostMapping("/profile/update")
+    public String updateProfile(User user, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        user.setId(currentUser.getId());
+        userService.updateProfile(user);
+        User updatedUser = userService.getUserById(currentUser.getId());
+        session.setAttribute("user", updatedUser);
+        return "redirect:/owner/profile";
     }
 }

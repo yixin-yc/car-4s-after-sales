@@ -176,7 +176,7 @@
 <div class="header">
     <h1>汽车4S店售后管理系统</h1>
     <div class="user-info">
-        <span>欢迎，${sessionScope.user.realName} (管理员)</span>
+        <a href="${pageContext.request.contextPath}/admin/profile" style="color:white; text-decoration:none;">欢迎，${sessionScope.user.realName} (管理员)</a>
         <a href="${pageContext.request.contextPath}/logout">退出</a>
     </div>
 </div>
@@ -188,6 +188,7 @@
     <a href="${pageContext.request.contextPath}/admin/orders" class="active">订单管理</a>
     <a href="${pageContext.request.contextPath}/admin/complaints">投诉处理</a>
     <a href="${pageContext.request.contextPath}/admin/messages">留言管理</a>
+    <a href="${pageContext.request.contextPath}/admin/profile">个人信息</a>
 </div>
 
 <div class="container">
