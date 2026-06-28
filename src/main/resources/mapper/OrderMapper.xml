@@ -147,4 +147,16 @@
             #{id}
         </foreach>
     </select>
+
+    <select id="countByMonth" resultType="int">
+        SELECT COUNT(*) FROM service_order
+        WHERE YEAR(create_time) = #{year} AND MONTH(create_time) = #{month}
+    </select>
+
+    <select id="sumAmountByDateRange" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(amount), 0) FROM service_order
+        WHERE status = 'completed'
+          AND create_time &gt;= #{startDate}
+          AND create_time &lt; #{endDate}
+    </select>
 </mapper>

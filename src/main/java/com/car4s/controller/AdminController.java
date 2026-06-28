@@ -7,7 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 
 @Controller
 @RequestMapping("/admin")
@@ -133,12 +135,67 @@ public class AdminController {
         return "admin/orders";
     }
 
+    @GetMapping("/order/detail/{id}")
+    public String orderDetail(@PathVariable Integer id, Model model) {
+        model.addAttribute("order", orderService.getOrderById(id));
+        return "admin/order_detail";
+    }
+
+    @GetMapping("/order/complete/{id}")
+    public String completeOrder(@PathVariable Integer id) {
+        orderService.completeOrder(id);
+        return "redirect:/admin/orders";
+    }
+
     @GetMapping("/order/statistics")
     public String orderStatistics(Model model) {
-        model.addAttribute("totalOrders", orderService.getAllOrders().size());
-        model.addAttribute("pendingOrders", orderService.getOrdersByStatus("pending").size());
-        model.addAttribute("processingOrders", orderService.getOrdersByStatus("processing").size());
-        model.addAttribute("completedOrders", orderService.getOrdersByStatus("completed").size());
+        int totalOrders = orderService.getAllOrders().size();
+        int pendingOrders = orderService.getOrdersByStatus("pending").size();
+        int processingOrders = orderService.getOrdersByStatus("processing").size();
+        int completedOrders = orderService.getOrdersByStatus("completed").size();
+
+        model.addAttribute("totalOrders", totalOrders);
+        model.addAttribute("pendingOrders", pendingOrders);
+        model.addAttribute("processingOrders", processingOrders);
+        model.addAttribute("completedOrders", completedOrders);
+
+        Calendar cal = Calendar.getInstance();
+        int currentYear = cal.get(Calendar.YEAR);
+
+        int[] allMonthly = orderService.getMonthlyOrderCounts(currentYear);
+        int[] monthlyData = new int[6];
+        for (int i = 0; i < 6; i++) {
+            monthlyData[i] = allMonthly[i];
+        }
+        model.addAttribute("monthlyData", monthlyData);
+
+        int pendingPercent = totalOrders > 0 ? (int) Math.round((double) pendingOrders / totalOrders * 100) : 0;
+        int processingPercent = totalOrders > 0 ? (int) Math.round((double) processingOrders / totalOrders * 100) : 0;
+        model.addAttribute("pendingPercent", pendingPercent);
+        model.addAttribute("processingPercent", processingPercent);
+
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Date monthStart = cal.getTime();
+        cal.add(Calendar.MONTH, 1);
+        Date monthEnd = cal.getTime();
+        model.addAttribute("monthlyRevenue", orderService.getRevenueByDateRange(monthStart, monthEnd));
+
+        cal.set(Calendar.MONTH, ((cal.get(Calendar.MONTH) / 3) * 3));
+        Date quarterStart = cal.getTime();
+        cal.add(Calendar.MONTH, 3);
+        Date quarterEnd = cal.getTime();
+        model.addAttribute("quarterlyRevenue", orderService.getRevenueByDateRange(quarterStart, quarterEnd));
+
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        Date yearStart = cal.getTime();
+        cal.add(Calendar.YEAR, 1);
+        Date yearEnd = cal.getTime();
+        model.addAttribute("yearlyRevenue", orderService.getRevenueByDateRange(yearStart, yearEnd));
+
         return "admin/order_statistics";
     }
 

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Date;
+import java.math.BigDecimal;
+import java.util.Calendar;
 
 @Service
 public class OrderService {
@@ -89,5 +91,17 @@ public class OrderService {
 
     public void addEvaluation(Evaluation evaluation) {
         evaluationMapper.insert(evaluation);
+    }
+
+    public int[] getMonthlyOrderCounts(int year) {
+        int[] counts = new int[12];
+        for (int i = 0; i < 12; i++) {
+            counts[i] = orderMapper.countByMonth(year, i + 1);
+        }
+        return counts;
+    }
+
+    public BigDecimal getRevenueByDateRange(Date startDate, Date endDate) {
+        return orderMapper.sumAmountByDateRange(startDate, endDate);
     }
 }

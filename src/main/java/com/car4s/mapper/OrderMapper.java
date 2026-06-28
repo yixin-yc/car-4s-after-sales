@@ -4,6 +4,8 @@ import com.car4s.model.Part;
 import com.car4s.model.ServiceOrder;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -22,4 +24,6 @@ public interface OrderMapper {
     List<Part> findPartsByIds(@Param("ids") List<Integer> ids);
     List<ServiceOrder> findAllWithPage(@Param("offset") int offset, @Param("pageSize") int pageSize);
     int countAll();
+    int countByMonth(@Param("year") int year, @Param("month") int month);
+    BigDecimal sumAmountByDateRange(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }
