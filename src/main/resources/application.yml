@@ -2,7 +2,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/car4s_db?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8&allowPublicKeyRetrieval=true}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:}
+    password: ${DB_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
@@ -22,11 +22,48 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-  cache:
-    type: caffeine
-    cache-names: parts,vehicles
-    caffeine:
-      spec: maximumSize=500,expireAfterWrite=10m
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+    timeout: 10000ms
+    lettuce:
+      pool:
+        max-active: 50
+        max-wait: 3000ms
+        max-idle: 20
+        min-idle: 5
+      shutdown-timeout: 200ms
+    # 持久化配置（需要在redis.conf中配置）
+    # save 900 1
+    # save 300 10
+    # save 60 10000
+    # appendonly yes
+    # appendfsync everysec
+    # 淘汰策略：volatile-lru（优先淘汰设置了过期时间的key）
+    # maxmemory-policy volatile-lru
+    # maxmemory 2gb
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    virtual-host: /
+    # 连接配置
+    connection-timeout: 10s
+    # 消费者确认
+    listener:
+      simple:
+        acknowledge-mode: auto
+        prefetch: 10
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 3000
+          multiplier: 2
+          max-interval: 15000
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
