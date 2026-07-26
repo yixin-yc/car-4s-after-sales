@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Date;
 import java.math.BigDecimal;
@@ -194,5 +195,34 @@ public class OrderService {
 
     public BigDecimal getRevenueByDateRange(Date startDate, Date endDate) {
         return orderMapper.sumAmountByDateRange(startDate, endDate);
+    }
+
+    public Boolean cancelOrder(Integer orderId, Integer ownerId) {
+        ServiceOrder order = orderMapper.findById(orderId);
+        if (order == null) {
+            logger.warn("取消订单失败，订单不存在，orderId: {}", orderId);
+            return false;
+        }
+        if (!order.getStatus().equals("pending")) {
+            logger.warn("取消订单失败，订单状态不是待处理，orderId: {}", orderId);
+            return false;
+        }
+        if (!order.getOwnerId().equals(ownerId)) {
+            logger.warn("取消订单失败，订单不属于当前用户，orderId: {}", orderId);
+            return false;
+        }
+
+        String cacheKey = "order:" + orderId;
+        redisUtil.updateWithCacheInvalidation(
+                cacheKey,
+                () -> orderMapper.cancelOrder(orderId)
+        );
+        logger.info("订单已取消，orderId: {}", orderId);
+
+        OrderEvent event = new OrderEvent("cancelled", orderId, order.getOrderNo());
+        event.setOwnerId(order.getOwnerId());
+        event.setStatus("cancelled");
+        orderEventProducer.sendOrderCancelled(event);
+        return true;
     }
 }

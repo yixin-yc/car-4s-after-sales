@@ -62,6 +62,10 @@
       background: #d4edda;
       color: #155724;
     }
+    .status-cancelled {
+      background: #f8d7da;
+      color: #721c24;
+    }
     .info-section {
       background: #f8f9fa;
       padding: 20px;
@@ -318,9 +322,7 @@
 <script>
   function cancelOrder(id) {
     if (confirm('确定要取消这个订单吗？')) {
-      // 这里需要实现取消订单的功能
-      alert('取消订单功能开发中');
-      // window.location.href = '${pageContext.request.contextPath}/owner/order/cancel/' + id;
+      window.location.href = '${pageContext.request.contextPath}/owner/order/cancel/' + id;
     }
   }
 </script>

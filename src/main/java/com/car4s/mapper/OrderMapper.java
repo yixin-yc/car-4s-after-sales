@@ -19,6 +19,7 @@ public interface OrderMapper {
     void insert(ServiceOrder order);
     void update(ServiceOrder order);
     void delete(@Param("id") Integer id);
+    void cancelOrder(@Param("id") Integer id);
     int getOrderCountByOwner(@Param("ownerId") Integer ownerId);
     List<ServiceOrder> getRecentOrdersByOwner(@Param("ownerId") Integer ownerId, @Param("limit") Integer limit);
     List<Part> findPartsByIds(@Param("ids") List<Integer> ids);

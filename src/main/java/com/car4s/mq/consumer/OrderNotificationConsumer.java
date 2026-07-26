@@ -35,6 +35,9 @@ public class OrderNotificationConsumer {
                 case "completed":
                     handleOrderCompleted(event);
                     break;
+                case "cancelled":
+                    handleOrderCancelled(event);
+                    break;
                 default:
                     logger.warn("未知的订单事件类型: {}", event.getEventType());
             }
@@ -54,6 +57,15 @@ public class OrderNotificationConsumer {
                 event.getOrderNo(), event.getOwnerId(), event.getServiceType());
         // TODO: 实际业务逻辑 - 发送通知给车主确认订单已提交
         // 例如：sendSms(ownerPhone, "您的维修订单已提交成功，订单号：" + event.getOrderNo());
+    }
+
+    /**
+     * 处理订单取消通知
+     */
+    private void handleOrderCancelled(OrderEvent event) {
+        logger.info("❌ [订单取消通知] 订单号: {}, 车主ID: {}",
+                event.getOrderNo(), event.getOwnerId());
+        // TODO: 实际业务逻辑 - 通知技师订单已取消
     }
 
     /**

@@ -94,6 +94,11 @@ public class RabbitMQConfig {
      */
     public static final String COMPLAINT_CREATED_KEY = "complaint.created";
 
+    /**
+     * 取消订单
+     */
+    public static final String ORDER_CANCELLED_KEY = "order.canceled";
+
     // ==================== Bean定义 ====================
 
     /**
@@ -134,6 +139,11 @@ public class RabbitMQConfig {
     @Bean
     public Binding orderCompletedBinding(Queue orderNotificationQueue, TopicExchange orderExchange) {
         return BindingBuilder.bind(orderNotificationQueue).to(orderExchange).with(ORDER_COMPLETED_KEY);
+    }
+
+    @Bean
+    public Binding orderCancelledBinding(Queue orderNotificationQueue, TopicExchange orderExchange) {
+        return BindingBuilder.bind(orderNotificationQueue).to(orderExchange).with(ORDER_CANCELLED_KEY);
     }
 
     @Bean

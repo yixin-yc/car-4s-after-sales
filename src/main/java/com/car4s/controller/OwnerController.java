@@ -107,6 +107,16 @@ public class OwnerController {
         return "owner/order_detail";
     }
 
+    @GetMapping("/order/cancel/{id}")
+    public String cancelOrder(@PathVariable Integer id, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        boolean result = orderService.cancelOrder(id, user.getId());
+        if (!result) {
+            return "redirect:/owner/order/detail/" + id;
+        }
+        return "redirect:/owner/orders";
+    }
+
     @GetMapping("/messages")
     public String messages(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");

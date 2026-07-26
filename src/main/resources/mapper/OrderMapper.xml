@@ -124,6 +124,12 @@
         DELETE FROM service_order WHERE id = #{id}
     </delete>
 
+    <update id="cancelOrder">
+        UPDATE service_order
+        SET status = 'cancelled'
+        WHERE id = #{id}
+    </update>
+
     <select id="findAllWithPage" resultMap="BaseResultMap">
         SELECT so.*,
                o.real_name as oreal_name, o.phone as ophone,

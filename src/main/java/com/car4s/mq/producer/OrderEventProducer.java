@@ -30,6 +30,15 @@ public class OrderEventProducer {
     }
 
     /**
+     * 发送订单取消事件
+     */
+    public void sendOrderCancelled(OrderEvent event) {
+        event.setEventType("cancelled");
+        event.setDescription("订单已取消");
+        sendMessage(RabbitMQConfig.ORDER_CANCELLED_KEY, event);
+    }
+
+    /**
      * 发送订单接受事件
      */
     public void sendOrderAccepted(OrderEvent event) {
